@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+#include <chrono>
+#define  mx 100005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 31
+#define  mod 19// 1000000007
+using namespace std;
+int bug =1;
+ll ans = 1 ;
+ll M[mx];
+void precalc(int val  ){
+    M[0] = 1;
+    M[1] = val % mod;
+   for(int i = 2 ;i < 31 ; ++i){
+       M[i] = (M[i-1]%mod * M[i-1]%mod)%mod;
+   }
+}
+void cal(int  p){
+    if(p <= 0)
+        return;
+    int x = int(log2(p));
+    int Z = int(pow(2 ,x));
+    int idx = log2(Z) + 1  ;
+    ans = (ans%mod * M[idx]%mod) %mod;
+    cal(p - Z);
+}
+int main(){
+    precalc(123456789 );
+    cal(132457895);
+    cout << ans << endl;
+}
