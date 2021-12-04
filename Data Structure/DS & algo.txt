@@ -1,0 +1,788 @@
+__2nd Shortest path _________________________
+
+
+
+#include <bits/stdc++.h>
+#define  mx 5005
+#define  pii pair<int,int>
+#define  inf 1 << 30
+using namespace std;
+struct edge
+{
+    int to , weight;
+    edge(int t ,int w) : to(t), weight(w) {}
+
+};
+struct  node
+{
+    int state, v,cost;
+    node(int x, int y, int z) : state(x) ,  v(y) , cost(z) {}
+    bool operator < (const node &o) const
+    {
+        if(state == o.state)
+            if(cost == o.cost)
+                return v > o.v;
+        return  cost > o.cost;
+        return state > o.state;
+    }
+};
+vector<edge>g[mx];
+int d[2][mx];
+int djks(int n)
+{
+    for(int i = 1 ;i <= n; ++i)
+    {
+        d[0][i] = d[1][i] = INT_MAX;
+    }
+    priority_queue<node>q;
+    d[0][1] = 0;
+    q.push(node(0,1,0));
+    while (!q.empty())
+    {
+        int st = q.top().state;
+        int vr  = q.top().v;
+        int cst = q.top().cost;
+        q.pop();
+        if(vr == n && st == 1)
+            return  d[1][n];
+        if(cst > d[st][vr]) continue;
+        for(int i = 0; i < int(g[vr].size()) ;++i)
+        {
+            int v1 = g[vr][i].to;
+            int w1 = g[vr][i].weight;
+            if(cst + w1 < d[0][v1])
+            {
+                d[1][v1] = d[0][v1];
+                d[0][v1] = cst + w1;
+                q.push(node(0 ,v1, d[0][v1]));
+                q.push(node(1,v1, d[1][v1]));
+            }
+            else if(w1 + cst > d[0][v1]   && w1 + cst < d[1][v1])
+            {
+                d[1][v1] = w1 + cst;
+                q.push(node(1, v1,d[1][v1]));
+            }
+        }
+    }
+}
+int main()
+{
+    int t;
+    scanf("%d", &t);
+    for(int tc = 1; tc <= t ;++tc)
+    {
+        int n,r;
+        scanf("%d %d", &n, &r);
+        for(int i = 1;i <= r ;++i)
+        {
+            int a,b,c;
+            scanf("%d %d %d",&a, &b, &c );
+            g[a].push_back(edge(b,c));
+            g[b].push_back(edge(a,c));
+        }
+        printf("Case %d: %d\n", tc, djks(n));
+        for(int i = 0 ; i <=n ;++i)
+            g[i].clear();
+
+    }
+}
+_______________________________________________
+Articulation Point 
+_________________________________________________________
+#include <bits/stdc++.h>
+#define  mx 100005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 20
+using namespace std;
+int bug = 1;
+int tym = 0 ;
+int low[mx];
+int d[mx];
+int  visited[mx];
+int  cut_p[mx];
+vector<int>edge[mx];
+void Find(int u , int p){
+    low[u] = d[u] = ++tym;
+    visited[u] = 1;
+    int child = 0;
+    for(auto v : edge[u]){
+        if(u == v) continue;
+        if(visited[v]){
+            low[u] = min(low[u] , d[v]);
+        }
+        if(!visited[v]){
+            Find(v,u);
+            low[u] = min(low[u], low[v]);
+            if(d[u] <= low[v] &&  p != -1)
+                cut_p[u] = 1;
+            ++child;
+        }
+    }
+    if(p == -1 && child > 1)
+        cut_p[u] = 1;
+}
+void allclear(int n) {
+    tym = 0;
+    For(i, n + 1) {
+        low[i] = d[i] = visited[i] = cut_p[i] = 0;
+        edge[i].clear();
+    }
+}
+int main()
+{
+    int t;
+    scanf("%d", &t);
+    For(tc,t){
+        int n,m;
+        scanf("%d %d", &n, &m);
+        allclear(n);
+        For(i,m){
+            int a,b;
+            scanf("%d %d", &a, &b);
+            edge[a].push_back(b);
+            edge[b].push_back(a);
+        }
+        Find(1, -1);
+        int ans = 0;
+        For(i,n){
+            if(cut_p[i + 1])
+                ans++;
+        }
+        printf("Case %d: %d\n", tc + 1,ans);
+
+    }
+}
+
+
+
+___________________________________________
+Lazy Propagation::
+___________________________________________
+
+#include <bits/stdc++.h>
+#include <chrono>
+#define  mx 100005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 31
+#define  mod 1000000007
+using namespace std;
+struct  info {
+    ll sum, prop;
+}tree[mx*3];
+void build(int at, int left , int right){
+    if(left == right) {
+        tree[at].prop = -1;
+        tree[at].sum = 0;
+        return;
+    }
+    build(at*2 , left , (left + right)/2);
+    build(at*2+1, (left + right)/2 + 1,right);
+    tree[at].sum = tree[at*2].sum + tree[at*2 + 1].sum;
+    tree[at].prop = -1;
+}
+void update(int at, int left ,int right ,int start ,int end , int val){
+    if(start > right ||end < left)
+        return;
+    if(left >= start && right <= end){
+        tree[at].sum = (right - left + 1) * val;
+        tree[at].prop = val;
+        return;
+    }
+    int  m = (left + right)/2;
+    if(tree[at].prop != -1){
+        tree[at*2].prop  = tree[at*2 + 1].prop = tree[at].prop;
+        tree[at*2].sum = (m-left+1)*tree[at*2].prop;
+        tree[at*2+1].sum = (right-m)*tree[at*2 + 1].prop;
+        tree[at].prop = -1;
+    }
+    update(at*2 ,left , m ,start ,end ,val);
+    update(at*2+1, m+1,right , start ,end , val);
+    tree[at].sum = tree[at*2].sum + tree[at*2+1].sum;
+}
+ll query(int at ,int left , int right , int start ,int end ) {
+    if (start > right || end < left)
+        return 0;
+    if (left >= start && right <= end) {
+        return tree[at].sum;
+    }
+    int m = (left + right) / 2;
+    if (tree[at].prop != -1) {
+            tree[at*2].prop = tree[at*2 + 1].prop = tree[at].prop;
+            tree[at*2].sum = (m - left + 1)*tree[at*2].prop;
+            tree[at*2 + 1].sum = (right - m)*tree[at*2+ 1].prop;
+            tree[at].prop = -1;
+    }
+    return query(at*2 ,left , m ,start ,end)
+    + query(at*2 + 1, m + 1, right, start ,end);
+}
+ll gcd (ll a , ll b){
+    return  b==0 ? a : gcd(b, a%b);
+}
+int main(){
+ int t;
+ scanf("%d", &t);
+ For(tc ,t){
+     int n ,q;
+     scanf("%d %d", &n ,&q);
+     build(1, 1,n);
+     printf("Case %d:\n", tc + 1);
+     while (q--){
+         int a,b,c,d;
+         scanf("%d ", &a);
+         if(a==1){
+             scanf("%d %d %d" ,&b,&c ,&d);
+             ++b ,++c;
+             update(1, 1,n,b,c,d);
+           
+         }
+         else {
+             scanf("%d %d",&b ,&c);
+             ++b, ++c;
+             ll x = query(1,1,n,b, c);
+        
+             if(x % (c - b + 1 ) == 0)
+                 printf("%lld\n", x/(c - b + 1));
+             else{
+                 ll y = c - b + 1 ;
+             
+                 ll z = gcd(x, y);
+                 cout << x/z <<"/"<< y/z<< endl;
+             }
+         }
+     }
+ }
+}
+
+
+
+
+
+
+
+________________________________________
+LCA .. Query on a tree
+___________________________________________
+
+/*must solve LCA problem 1*/
+/*QTREE2 - Query on a tree II */
+/*https://www.spoj.com/problems/QTREE2/ */
+
+
+#include <bits/stdc++.h>
+#define  pii pair<int,int>
+#define mx 10010
+
+using namespace std;
+vector<pii>edge[mx];
+int L[mx],P[mx][30],T[mx];
+int vis[mx];
+long dist[mx];
+void dfs(int from ,int u ,int dep)
+{
+    L[u] = dep;
+    T[u] = from;
+    vis[u] = 1;
+    for( auto i : edge[u])
+    {
+        int a = i.first;
+        int dis = i.second;
+        if(vis[a]) continue;
+        P[a][0] = u;
+        dist[a] = dist[u] + dis;
+        dfs(u , a, dep+ 1);
+    }
+
+}
+void preprocess(int N)
+{
+    for(int i = 1 ; i  <= N ;++i)
+    {
+        for(int j = 0 ; (1 << j) < N ;++j)
+            P[i][j] = -1;
+    }
+    dfs( -1 , 1 ,0);
+   for(int j = 1; (1<<j)  < N; ++j)
+    
+    {
+	for(int i =  1 ;i <= N; ++i)
+        
+        {
+            if(P[i][j-1] == -1) continue;
+            P[i][j] = P[ P[i][j - 1] ][j - 1];
+        }
+    }
+}
+void Reset(int N){
+    for( int i = 0 ; i <=  N ; i++ ){
+        edge[i].clear();
+        vis[i] = 0 ;
+        dist[i] = -1;
+    }
+    dist[0] = 0 ;
+}
+int lca(int p  ,int q)
+{
+    if(L[p] <  L[q])  swap(p , q);
+    int log =1;
+    for(log = 1; (1 << log) <= L[p]; log++) ; log--;
+    for(int i = log; i >=0; --i)
+    {
+        if(L[p] - (1 << i) >=  L[q])
+            p  = P[p][i];
+
+    }
+    if(p == q) return  p ;
+    for(int i = log; i >=0 ; --i)
+    {
+        if(P[p][i] != -1  && P[p][i] != P[q][i])
+        {
+            p = P[p][i];
+            q = P[q][i];
+        }
+    }
+    return  P[p][0] ;
+
+
+}
+int distance(int p , int q )
+{
+    int c =lca(p,q);
+    return dist[p] + dist[q] - 2*dist[c];
+
+}
+int Findkth(int p,int q, int k)
+{
+    int c = lca(p,q);
+    int z;
+    if(c == p)
+    {
+        swap(p ,q);
+        z = L[p] - L[q] + 1;
+        k = z - k + 1 ;
+
+
+    }
+    else if(k > L[p] - L[c] + 1)
+    {
+        swap(p , q);
+        z = L[q] + L[p] -  2*L[c] + 1;
+        k = z- k + 1;
+
+    }
+    int lg ;
+    for(lg = 1 ; (1 << lg) <= L[p];lg++ );
+    lg--;
+    k--;
+    for(int i = lg; i >=0; --i)
+    {
+        if((1 <<i) <= k)
+        {
+            p = P[p][i];
+            k -=(1 << i);
+        }
+
+    }
+    return  p;
+
+
+
+}
+int main()
+{
+    int t;
+    char str[100];
+    scanf("%d", &t);
+    while(t--)
+    {
+        int n;
+        scanf("\n%d",&n);
+        Reset(n);
+
+        for(int i = 0; i  < n ;++i)
+        {
+            int x,y,z;
+            scanf("%d %d %d", &x, &y, &z);
+            edge[x].push_back({y,z});
+            edge[y].push_back({x,z});
+        }
+         preprocess(n);
+        while (scanf("%s", &str))
+        {
+            if(str[1] == 'O' )
+                break;
+            if(str[0]=='D')
+            {
+                int a,b;
+                cin >> a >>b;
+                printf("%d\n", distance(a,b));
+
+            } else
+            {
+                int a,b,c;
+                cin >> a >> b >> c;
+                printf("%d\n", Findkth(a,b,c));
+            }
+        }
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+___________________________________________
+
+MO,s algorithm___________________________________________
+_____
+
+
+#include <bits/stdc++.h>
+#define pii pair<ll,ll >
+#define  ll long long
+using namespace std;
+//pair< pii, ll > queries[200010];
+struct  voxod
+{
+    int l,r,idx;
+}queries[300009];
+ll  curr_ans= 0;
+ll  ans[300010];
+int block_size;
+ll cnt[2000005];
+inline bool cmp(voxod a ,voxod b)
+{
+    int x  =  a.l/block_size;
+    int y = b.l/block_size;
+    if(x != y)
+        return  x <y ;
+    return a.r < b.r;
+}
+void add(int x)
+{   ll a;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans -= a;
+    cnt[x]++;
+     a = cnt[x]*cnt[x]*x;
+    curr_ans+= a;
+}
+void remove(int x)
+{   ll a;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans -= a;
+    cnt[x]--;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans+= a;
+}
+int main()
+{
+
+    int n ,q;
+    scanf("%d %d", &n , &q);
+    int a[n+1];
+    block_size = int (sqrt(n));
+    for(int   i = 0  ; i <n;++i)
+    {
+        scanf("%d", &a[i]);
+    }
+    for(int i = 0 ; i  < q;++i)
+    {
+    scanf("%d %d", &queries[i].l , &queries[i].r);
+    queries[i].idx = i;
+
+    }
+
+    sort(queries ,queries + q, cmp);
+
+
+    int mo_left = 0;
+    int mo_right = -1;
+    for(int  i = 0 ;  i < q;i++)
+    {
+        int left  = queries[i].l -1 ;
+        int right = queries[i].r -1;
+        while (mo_right < right )
+        {
+            mo_right++;
+            add(a[mo_right]);
+
+        }
+        while (mo_right > right)
+        {
+
+            remove(a[mo_right]);
+            mo_right--;
+        }
+        while (mo_left > left )
+        {
+            mo_left--;
+            add(a[mo_left]);
+        }
+        while (mo_left < left)
+        {
+
+            remove(a[mo_left]);
+            mo_left++;
+        }
+        ans[queries[i].idx]= curr_ans;
+    }
+    for(int  i = 0 ; i  < q;++i)
+    {
+        printf("%I64d\n", ans[i]);
+    }
+
+}
+
+______________________________________
+
+Shortest path with limited edges___________________________________________
+___________________________________________
+
+
+#include <bits/stdc++.h>
+#define  mx 1005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+using namespace std;
+struct  edge
+{
+    int  v,  cost;
+    edge(int a, int c  ) :  v(a), cost(c) {}
+};
+int bug = 1;
+vector<edge>g[mx];
+int d[mx][mx];
+int inQ[mx][mx];
+void FORD(int n,int k)
+{
+
+    for(int i = 0; i <= n; ++i)
+    {
+        for(int j = 0 ; j <= k ;++j)
+        {
+            d[i][j] = 1 << 30;
+            inQ[i][j] = 0;
+        }
+    }
+
+    queue<edge>q;
+    q.push(edge(1,0));
+    d[1][0] = 0;
+    inQ[1][0] = 1;
+    while (!q.empty())
+    {
+        int m = q.front().v;
+        int p =q.front().cost;
+        q.pop();
+        inQ[m][p] = 0;
+        if(p >= k)
+            continue;
+        for(auto I : g[m])
+        {
+            if(d[m][p] + I.cost < d[I.v][p+1] )
+            {
+                d[I.v][p+1] = d[m][p] + I.cost;
+                if(!inQ[I.v][p+1])
+                {
+                    q.push(edge(I.v, p+1));
+                    inQ[I.v][p+1] = 1;
+                }
+            }
+        }
+
+    }
+
+    int ans = 1 << 30;
+    for(int i = 1; i <= k ; ++i)
+        ans = min(ans, d[n][i]);
+    if(ans == 1 << 30)
+        printf("No satisfactory flights\n");
+    else
+        printf("Total cost of flight(s) is $%d\n",ans);
+}
+
+int main()
+{
+    int t;
+    scanf("%d", &t);
+    for(int tc = 1; tc <= t; ++tc)
+    {
+        int n,m,q,stps;
+        map<string ,int>mp;
+        scanf("%d", &n);
+        For(i,n)
+        {
+            string s1;
+            cin >> s1 ;
+            mp[s1] = i + 1;
+            g[i].clear();
+        }
+        g[n].clear();
+        scanf("%d", &m);
+
+        For(i,m)
+        {
+            string s1,s2;
+            int cst;
+            cin >> s1 >>s2 >>cst;
+            g[mp[s1]].push_back(edge(mp[s2],cst));
+
+        }
+
+
+
+        scanf("%d",&q);
+        printf("Scenario #%d\n", tc);
+        while(q--)
+        {
+           int  Q;
+           scanf("%d", &Q);
+           FORD(n,Q + 1);
+        }
+        printf("\n");
+
+
+
+
+
+
+    }
+}
+
+
+___________________________________________
+
+SYSTem of inequalities with Bellman form;;
+make the ralation x - y <= p ; 
+draw edges from y to x with cost p
+___________________________________________
+
+
+
+TRIE tree
+___________________________________________
+___________________________________________
+
+
+#include <bits/stdc++.h>
+using  namespace std;
+struct node {
+    bool endmark;
+    node* next[26 + 1];
+    node()
+    {
+        endmark = false;
+        for (int i = 0; i < 26; i++)
+            next[i] = NULL;
+    }
+} * root;
+void insert(char* str, int len)
+{
+    node* curr = root;
+    for (int i = 0; i < len; i++) {
+        int id = str[i] - 'a';
+        if (curr->next[id] == NULL)
+            curr->next[id] = new node();
+        curr = curr->next[id];
+    }
+    curr->endmark = true;
+}
+bool search(char* str, int len)
+{
+    node* curr = root;
+    for (int i = 0; i < len; i++) {
+        int id = str[i] - 'a';
+        if (curr->next[id] == NULL)
+            return false;
+        curr = curr->next[id];
+    }
+    return curr->endmark;
+}
+void del(node* cur)
+{
+    for (int i = 0; i < 26; i++)
+        if (cur->next[i])
+            del(cur->next[i]);
+
+    delete (cur);
+}
+int main() {
+
+    puts("ENTER NUMBER OF WORDS");
+    root = new node();
+    int num_word;
+    cin >> num_word;
+    for (int i = 1; i <= num_word; i++) {
+        char str[50];
+        scanf("%s", str);
+        insert(str, strlen(str));
+    }
+    puts("ENTER NUMBER OF QUERY");
+    int query;
+    cin >> query;
+    for (int i = 1; i <= query; i++) {
+        char str[50];
+        scanf("%s", str);
+        if (search(str, strlen(str)))
+            puts("FOUND");
+        else
+            puts("NOT FOUND");
+    }
+    del(root); //??????? ????? ??? ?????
+    return 0;
+}
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
+___________________________________________
+
+___________________________________________
