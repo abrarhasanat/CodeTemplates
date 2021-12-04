@@ -1,0 +1,526 @@
+
+
+
+
+ ///////////Euler totient  from 1 to n //////////////
+
+#include <bits/stdc++.h>
+#include <chrono>
+#define  mx 5000005
+#define  ll unsigned long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 31
+#define  mod  1000000007
+using  namespace std;
+int bug = 1;
+ll phi[mx + 1];
+void calc(){
+    For(i , mx + 1) phi[i] = i;
+    for(int i = 2; i <= mx ; ++i){
+        if(phi[i] == i){
+            phi[i] = i - 1;
+            for(int j = 2*i ;j <= mx ; j += i){
+                phi[j] -= phi[j]/i;
+            }
+        }
+    }
+}
+void precalc(){
+   phi[0] = phi[1]  = 0;
+    for(int i = 3 ;i < mx ;++i){
+        phi[i] = phi[i-1] + (phi[i] * phi[i]);
+    }
+}
+
+int main(){
+    int t;
+    scanf("%d", &t);
+    calc() ;
+    precalc();
+    For(tc ,t){
+        int a, b;
+        scanf("%d %d",&a, &b);
+        printf("Case %d: ", tc + 1);
+        cout << phi[b] - phi[a - 1] << endl;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+Fib(n ) using matrix::::::-------------->
+/* let M = { { 1, 1} , { 1 , 0}}
+multiply this matrix n -1 times to get nth fibonacci number ,,
+thats it ;
+Here is the procedure
+ */
+#include <bits/stdc++.h>
+#include <chrono>
+#include <chrono>
+#define  mx 110
+#define  ll   long long
+#define  pii pair<ll, ll>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 30
+#define  mod  1000000007
+using  namespace std;
+ll m[2][2] = { { 1, 1} , { 1, 0}};
+void multiply( ll (&p)[2][2] , ll (&m)[2][2]){
+    ll x = ((p[0][0]%mod*m[0][0]%mod)%mod + (p[0][1]% mod * m[1][0] % mod) % mod )%mod;
+    ll y = ( (p[0][0]%mod*m[0][1]%mod )%mod + ( p[0][1]%mod*m[1][1]%mod)%mod )%mod;
+    ll xx = ( (p[1][0]%mod*m[0][0]%mod )%mod + ( p[1][1]%mod * m[1][0]%mod)%mod  ) % mod;
+    ll yy = ( (p[1][0]%mod*m[0][1]%mod)%mod + (p[1][1]% mod * m[1][1] % mod) % mod  ) % mod;
+    p[0][0] = x;
+    p[0][1] = y;
+    p[1][0] = xx;
+    p[1][1] = yy;
+
+}
+void power(ll (&p)[2][2] ,  ll n){
+    if(n == 0 || n == 1)
+        return;
+    if(n % 2 == 0){
+        power(p , n/2);
+        multiply(p , p);
+    }
+    else {
+        power(p , n -1 );
+        multiply(p , m);
+    }
+}
+ll fib(ll n){
+    if(n == 0)
+        return  0;
+    ll p[2][2] = {{ 1, 1} , {1, 0}};
+    power(p , n-1);
+    return  p[0][0];
+}
+int main(){
+int t;
+scanf("%d ", &t);
+For(tc ,t){
+    ll n;
+    scanf("%lld" , &n);
+    if(n == 0){
+        printf("0\n");
+    }
+    else if(n == 1){
+        printf("2\n");
+    }
+    else
+        printf("%lld\n" , fib(n+3));
+}
+}
+/////////////////////////////////////////////////////////////////////////////
+// C++ program to find LCM of First N Natural Numbers. 
+#include <bits/stdc++.h> 
+#define MAX 100000 
+using namespace std; 
+
+// array to store all prime less than and equal to 10^6 
+vector <int> primes; 
+
+// utility function for sieve of sieve of Eratosthenes 
+void sieve() 
+{ 
+	bool isComposite[MAX] = {false}; 
+	for (int i=2; i*i<=MAX; i++) 
+	{ 
+		if (isComposite[i]==false) 
+			for (int j=2; j*i<=MAX; j++) 
+				isComposite[i*j] = true; 
+	} 
+
+	// Store all prime numbers in vector primes[] 
+	for (int i=2; i<=MAX; i++) 
+		if (isComposite[i]==false) 
+			primes.push_back(i); 
+} 
+
+// Function to find LCM of first n Natural Numbers 
+long long LCM(int n) 
+{ 
+	long long lcm = 1; 
+	for (int i=0; i<primes.size() && primes[i]<=n; i++) 
+	{ 
+		// Find the highest power of prime, primes[i] 
+		// that is less than or equal to n 
+		int pp = primes[i]; 
+		while (pp*primes[i] <= n) 
+			pp = pp *primes[i]; 
+
+		// multiply lcm with highest power of prime[i] 
+		lcm *= pp; 
+		lcm %= 1000000007; 
+	} 
+	return lcm; 
+} 
+
+// Driver code 
+int main() 
+{ 
+	sieve(); 
+	int N = 7; 
+	cout << LCM(N); 
+	return 0; 
+} 
+///////////////////////////////////////////////////////////////////////////////////////////////
+Modular exponentiation
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 31
+#define  mod 19// 1000000007
+using namespace std;
+int bug =1;
+ll ans = 1 ;
+ll M[mx];
+void precalc(int val  ){
+    M[0] = 1;
+    M[1] = val % mod;
+   for(int i = 2 ;i < 31 ; ++i){
+       M[i] = (M[i-1]%mod * M[i-1]%mod)%mod;
+   }
+}
+void cal(int  p){
+    if(p <= 0)
+        return;
+    int x = int(log2(p));
+    int Z = int(pow(2 ,x));
+    int idx = log2(Z) + 1  ;
+    ans = (ans%mod * M[idx]%mod) %mod;
+    cal(p - Z);
+}
+int main(){
+    precalc(123456789 );
+    cal(132457895);
+    cout << ans << endl;
+}
+/////////////////////////////////////
+Modular multiplicative inverse /////
+int gcdExtended(int a, int b, int *x, int *y) 
+{ 
+	
+	if (a == 0) 
+	{ 
+		*x = 0, *y = 1; 
+		return b; 
+	} 
+
+	int x1, y1; 
+	int gcd = gcdExtended(b%a, a, &x1, &y1); 
+	*x = y1 - (b/a) * x1; 
+	*y = x1; 
+
+	return gcd; 
+} 
+
+
+void modInverse(int a, int m) 
+{ 
+	int x, y; 
+	int g = gcdExtended(a, m, &x, &y); 
+	if (g != 1) 
+		cout << "Inverse doesn't exist"; 
+	else
+	{ 
+		// m is added to handle negative x 
+		int res = (x%m + m) % m; 
+		cout << "Modular multiplicative inverse is " << res; 
+	} 
+} ..........................
+PRIME FACTORIZATION USING SEIVE ::
+// C++ program to find prime factorization of a 
+// number n in O(Log n) time with precomputation 
+// allowed. 
+#include "bits/stdc++.h" 
+using namespace std; 
+
+#define MAXN 100001 
+
+// stores smallest prime factor for every number 
+int spf[MAXN]; 
+
+// Calculating SPF (Smallest Prime Factor) for every 
+// number till MAXN. 
+// Time Complexity : O(nloglogn) 
+void sieve() 
+{ 
+	spf[1] = 1; 
+	for (int i=2; i<MAXN; i++) 
+
+		// marking smallest prime factor for every 
+		// number to be itself. 
+		spf[i] = i; 
+
+	// separately marking spf for every even 
+	// number as 2 
+	for (int i=4; i<MAXN; i+=2) 
+		spf[i] = 2; 
+
+	for (int i=3; i*i<MAXN; i++) 
+	{ 
+		// checking if i is prime 
+		if (spf[i] == i) 
+		{ 
+			// marking SPF for all numbers divisible by i 
+			for (int j=i*i; j<MAXN; j+=i) 
+
+				// marking spf[j] if it is not 
+				// previously marked 
+				if (spf[j]==j) 
+					spf[j] = i; 
+		} 
+	} 
+} 
+vector<int> getFactorization(int x) 
+{ 
+	vector<int> ret; 
+	while (x != 1) 
+	{ 
+		ret.push_back(spf[x]); 
+		x = x / spf[x]; 
+	} 
+	return ret; 
+} 
+
+
+int main(int argc, char const *argv[]) {
+
+	sieve(); 
+	int x = 12246; 
+	cout << "prime factorization for " << x << " : "; 
+
+	// calling getFactorization function 
+	vector <int> p = getFactorization(x); 
+
+	for (int i=0; i<p.size(); i++) 
+		cout << p[i] << " "; 
+	cout << endl; 
+	return 0; 
+} 
+///////////////////////////////////////////////////
+SEGMENTED SEIVE //
+#include <bits/stdc++.h>
+#define  mx 100010
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < (n); ++i)
+#define  INF 1 << 30
+#define pb(x) push_back(x)
+#define  mod  1000000007
+#define PI acos(-1)
+#define line printf("\n");
+using  namespace std;
+int bug  = 1;
+vector<ll>prime;
+void simpleseive(ll lim){
+    prime.clear();
+    bool mark[lim + 1];
+    memset(mark , false, sizeof(mark));
+    for(ll i = 2; i <= lim ; ++i){
+        if(!mark[i]){
+            prime.push_back(i);
+            for(ll j = 2*i ; j <= lim; j += i)
+                mark[j] = true;
+        }
+    }
+}
+ll segment_seive(ll left , ll right){
+    ll lim = floor(sqrt(right));
+    simpleseive(lim);
+    ll n = right - left + 1;
+    bool mark[n + 1];
+    memset(mark, false, sizeof(mark));
+    for(ll i = 0 ; i < prime.size() ; ++i){
+      // prllf("%d\n" ,prime[i]);
+        ll lolim = floor(left / prime[i]) * prime[i];
+        if(lolim < left)
+            lolim += prime[i];
+        if(lolim == prime[i])
+            lolim += prime[i];
+        for(ll j = lolim ; j <= right ; j += prime[i]){
+            //prllf("%d ", j);
+            mark[j - left] = true;
+        }
+    }
+    ll cnt = 0;
+    for(ll i = left ; i <= right; ++i){
+        if(!mark[i-left]) {
+            cnt++;
+           // prllf("%d ", i);
+        }
+    }
+
+    return  cnt;
+}
+int main(){
+    int t;
+    scanf("%d", &t);
+    For(tc,t){
+        ll l ,r;
+        scanf("%lld %lld", &l,&r);
+        l = max(l,2LL);
+        printf("Case %d: %d\n", tc + 1 , segment_seive(l,r));
+    }
+    return 0;
+
+}
+
+///////////////////////////////////////////////////////////////////////
+
+
+SUM OF FIB N TO FIB M::::::;;;
+/*
+sum of fib(n) to  fib(m) 
+is fib(m + 2) - (fib (n +1 )
+*/
+#include <bits/stdc++.h>
+#include <chrono>
+#include <chrono>
+#define  mx 110
+#define  ll   long long
+#define  pii pair<ll, ll>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 30
+#define  mod  1000000007
+using  namespace std;
+int bug =1;
+
+ll m[2][2] = { { 1, 1} , { 1, 0}};
+ll ans  = 0;
+void multiply( ll (&p)[2][2] , ll (&m)[2][2]){
+    ll x = ((p[0][0]%mod*m[0][0]%mod)%mod + (p[0][1]% mod * m[1][0] % mod) % mod )%mod;
+    ll y = ( (p[0][0]%mod*m[0][1]%mod )%mod + ( p[0][1]%mod*m[1][1]%mod)%mod )%mod;
+    ll xx = ( (p[1][0]%mod*m[0][0]%mod )%mod + ( p[1][1]%mod * m[1][0]%mod)%mod  ) % mod;
+    ll yy = ( (p[1][0]%mod*m[0][1]%mod)%mod + (p[1][1]% mod * m[1][1] % mod) % mod  ) % mod;
+    p[0][0] = x;
+    p[0][1] = y;
+    p[1][0] = xx;
+    p[1][1] = yy;
+
+}
+void power(ll (&p)[2][2] ,  ll n){
+    if(n == 0 || n == 1)
+        return;
+    if(n % 2 == 0){
+
+        power(p , n/2);
+        multiply(p , p);
+
+    }
+    else {
+        power(p , n -1 );
+        multiply(p , m);
+    }
+}
+ll fib(ll n){
+    if(n == 0)
+        return  0;
+    ll p[2][2] = {{ 1, 1} , {1, 0}};
+    power(p , n-1);
+    return  p[0][0];
+}
+int main(){
+    int t;
+    scanf("%d", &t);
+    For(tc ,t){
+        ll a,b;
+        scanf("%lld %lld", &a, &b);
+        ll  x1 = fib(b + 2) % mod;
+        ll x2  = fib(a + 1)% mod;
+        printf("%lld\n" , (x1  - x2 + mod )% mod);
+    }
+}
+////////////////////////////////////////////////////////////////
+
+
+
+SUM OF LCM FROM 1 TO N___________
+#include <bits/stdc++.h>
+#include <chrono>
+#define  mx 1000005
+#define  ll  long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < (n); ++i)
+#define  INF 1 << 30
+//#define  mod  1000000007
+using  namespace std;
+ /// idea :- https://forthright48.com/spoj-lcmsum-lcm-sum ///
+ll ans[mx];
+ll phi[mx];
+void precal(){
+    For(i,mx) phi[i] =i;
+    for(int i = 2; i <= mx; ++i){
+        if(phi[i] == i){
+            phi[i]  = i-1;
+            for(int j = 2*i ; j <= mx ;j +=i){
+                phi[j] -= (phi[j] / i);
+            }
+        }
+    }
+    ans[1] = 1;
+    for(int i = 1; i <= mx ; ++i){
+        for(int j = i ; j <= mx; j += i){
+            ans[j]+= (phi[i] * i);
+        }
+    }
+}
+int main(){
+    int t;
+    scanf("%d", &t);
+    precal();
+    For(tc ,t){
+        int n;
+        scanf("%d", &n);
+        ll res = ans[n];
+        res = n *  (1 + res);
+        res/=2;
+        printf("%lld\n" ,res );
+
+    }
+}
+
+_____________________________________________________________
+
+
+cOUNT DIGITS IN N! _>>>>>>>........
+#include <bits/stdc++.h> 
+using namespace std; 
+
+long long findDigits(int n){
+ if (n < 0) 
+	return 0; 
+ if (n <= 1) 
+	return 1; 
+double x = ((n * log10(n / M_E) + 
+				log10(2 * M_PI * n) / 
+				2.0)); 
+
+	return floor(x) + 1; 
+} 
+
+int main(){ 
+ cout << findDigits(1) << endl; 
+	cout << findDigits(50000000) << endl; 
+	cout << findDigits(1000000000) << endl; 
+	cout << findDigits(120) << endl; 
+	return 0; 
+} 
+
+///////////////////////
+IF P IS PRIME THEN( P- 1) ! IS CONGRUENT TO - 1 MOD  P//
+
+
+
+
+
+
