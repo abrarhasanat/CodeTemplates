@@ -1,0 +1,62 @@
+/*
+sum of fib(n) to  fib(m) 
+is fib(m + 2) - (fib (n +1 )
+*/
+#include <bits/stdc++.h>
+#include <chrono>
+#include <chrono>
+#define  mx 110
+#define  ll   long long
+#define  pii pair<ll, ll>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+#define  INF 1 << 30
+#define  mod  1000000007
+using  namespace std;
+int bug =1;
+
+ll m[2][2] = { { 1, 1} , { 1, 0}};
+ll ans  = 0;
+void multiply( ll (&p)[2][2] , ll (&m)[2][2]){
+    ll x = ((p[0][0]%mod*m[0][0]%mod)%mod + (p[0][1]% mod * m[1][0] % mod) % mod )%mod;
+    ll y = ( (p[0][0]%mod*m[0][1]%mod )%mod + ( p[0][1]%mod*m[1][1]%mod)%mod )%mod;
+    ll xx = ( (p[1][0]%mod*m[0][0]%mod )%mod + ( p[1][1]%mod * m[1][0]%mod)%mod  ) % mod;
+    ll yy = ( (p[1][0]%mod*m[0][1]%mod)%mod + (p[1][1]% mod * m[1][1] % mod) % mod  ) % mod;
+    p[0][0] = x;
+    p[0][1] = y;
+    p[1][0] = xx;
+    p[1][1] = yy;
+
+}
+void power(ll (&p)[2][2] ,  ll n){
+    if(n == 0 || n == 1)
+        return;
+    if(n % 2 == 0){
+
+        power(p , n/2);
+        multiply(p , p);
+
+    }
+    else {
+        power(p , n -1 );
+        multiply(p , m);
+    }
+}
+ll fib(ll n){
+    if(n == 0)
+        return  0;
+    ll p[2][2] = {{ 1, 1} , {1, 0}};
+    power(p , n-1);
+    return  p[0][0];
+}
+int main(){
+    int t;
+    scanf("%d", &t);
+    For(tc ,t){
+        ll a,b;
+        scanf("%lld %lld", &a, &b);
+        ll  x1 = fib(b + 2) % mod;
+        ll x2  = fib(a + 1)% mod;
+        printf("%lld\n" , (x1  - x2 + mod )% mod);
+    }
+}

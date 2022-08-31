@@ -1,0 +1,13 @@
+"What is the number of sequences of 1 and 2 such that they sum up to an non-negative integer N?"
+
+The answer is N-th fibonacci number F_N and it's easy to show it inductively.
+
+First, when N = 0, there is one empty sequence so the answer is 1 
+which is equal to F_0. Similarly, when N = 1, 
+there is one sequence with exactly one 1 so the answer is 1 = F_1.
+
+Now suppose N >= 2 and suppose you have proved that the answer is 
+F_k for all k < N. Then, when you consider a sequence summing up to N,
+ the last element is either 1 or 2. Since there are F_(N-1) of them of 
+ the first type and F_(N-2) of the second type, the answer for N is
+ F_(N-1) + F_(N-2) = F_N.

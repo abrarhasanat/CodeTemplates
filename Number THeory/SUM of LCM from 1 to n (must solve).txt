@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+#include <chrono>
+#define  mx 1000005
+#define  ll  long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < (n); ++i)
+#define  INF 1 << 30
+//#define  mod  1000000007
+using  namespace std;
+ /// idea :- https://forthright48.com/spoj-lcmsum-lcm-sum ///
+ll ans[mx];
+ll phi[mx];
+void precal(){
+    For(i,mx) phi[i] =i;
+    for(int i = 2; i <= mx; ++i){
+        if(phi[i] == i){
+            phi[i]  = i-1;
+            for(int j = 2*i ; j <= mx ;j +=i){
+                phi[j] -= (phi[j] / i);
+            }
+        }
+    }
+    ans[1] = 1;
+    for(int i = 1; i <= mx ; ++i){
+        for(int j = i ; j <= mx; j += i){
+            ans[j]+= (phi[i] * i);
+        }
+    }
+}
+int main(){
+    int t;
+    scanf("%d", &t);
+    precal();
+    For(tc ,t){
+        int n;
+        scanf("%d", &n);
+        ll res = ans[n];
+        res = n *  (1 + res);
+        res/=2;
+        printf("%lld\n" ,res );
+
+    }
+}
+

@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+#define  mx 100005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+using namespace std;
+struct  edge
+{
+    int to ,cost;
+    edge(int t , int cst) : to(t) , cost(cst) {}
+};
+int cnt[mx];
+int inqueue[mx];
+int d[mx];
+vector<edge>g[mx];
+bool spfa(int src, int n)
+{
+    for(int i = 0 ; i <= n; ++i)
+        d[i] = (1 << 30);
+
+    d[src] = 0;
+    queue<int>q;
+    q.push(src);
+    inqueue[src] = 1;
+    while (!q.empty())
+    {
+        int v = q.front();
+        q.pop();
+        inqueue[v] = 0;
+        for(auto x : g[v])
+        {
+            if(d[v] +x.cost < d[x.to] )
+            {
+                d[x.to] = d[v] + x.cost;
+
+                if(!inqueue[x.to])
+                {
+                    q.push(x.to);
+                    inqueue[x.to] = 1;
+                    cnt[x.to]++;
+                    if(cnt[x.to] > n)
+                        return  false;
+                }
+
+            }
+        }
+    }
+
+    return  true;
+
+}
+
+int main()
+{
+}

@@ -1,0 +1,11 @@
+1 :- Xor( 0 , 1 , 2 ,3)  = 0 ;
+2 :-Xor ( 1 , n )  {
+		m = n % 4 ;
+		if(m == 0) return n 
+		if( m == 1 ) return 1 
+		if(m == 2) return n + 1
+		if( m == 3 ) return 0
+		}
+3 :- x XOR (x + 4 ) XOR ( x + 8 ) XOR (x + 12 ) = 0 
+4 :- XOR ( L ,R ) = XOR ( 1 , L - 1) ^ XOR ( 1 , R ) 
+		

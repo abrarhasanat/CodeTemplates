@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+#define pii pair<ll,ll >
+#define  ll long long
+using namespace std;
+//pair< pii, ll > queries[200010];
+struct  voxod
+{
+    int l,r,idx;
+}queries[300009];
+ll  curr_ans= 0;
+ll  ans[300010];
+int block_size;
+ll cnt[2000005];
+inline bool cmp(voxod a ,voxod b){
+    int x  =  a.l/block_size;
+    int y = b.l/block_size;
+    if(x != y)
+        return  x <y ;
+    return a.r < b.r;
+}
+void add(int x){   ll a;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans -= a;
+    cnt[x]++;
+     a = cnt[x]*cnt[x]*x;
+    curr_ans+= a;
+}
+void remove(int x){   ll a;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans -= a;
+    cnt[x]--;
+    a = cnt[x]*cnt[x]*x;
+    curr_ans+= a;
+}
+int main(){
+
+    int n ,q;
+    scanf("%d %d", &n , &q);
+    int a[n+1];
+    block_size = int (sqrt(n));
+    for(int   i = 0  ; i <n;++i)
+    {
+        scanf("%d", &a[i]);
+    }
+    for(int i = 0 ; i  < q;++i)
+    {
+    scanf("%d %d", &queries[i].l , &queries[i].r);
+    queries[i].idx = i;
+
+    }
+
+    sort(queries ,queries + q, cmp);
+
+
+    int mo_left = 0;
+    int mo_right = -1;
+    for(int  i = 0 ;  i < q;i++)
+    {
+        int left  = queries[i].l -1 ;
+        int right = queries[i].r -1;
+        while (mo_right < right )
+        {
+            mo_right++;
+            add(a[mo_right]);
+
+        }
+        while (mo_right > right)
+        {
+
+            remove(a[mo_right]);
+            mo_right--;
+        }
+        while (mo_left > left )
+        {
+            mo_left--;
+            add(a[mo_left]);
+        }
+        while (mo_left < left)
+        {
+
+            remove(a[mo_left]);
+            mo_left++;
+        }
+        ans[queries[i].idx]= curr_ans;
+    }
+    for(int  i = 0 ; i  < q;++i)
+    {
+        printf("%I64d\n", ans[i]);
+    }
+
+}
+

@@ -1,0 +1,112 @@
+#include <bits/stdc++.h>
+#define  mx 1005
+#define  ll long long
+#define  pii pair<int,int>
+#define  debug printf("%d\n", bug++);
+#define  For(i,n) for(int i = 0; i < n; ++i)
+using namespace std;
+struct  edge
+{
+    int  v,  cost;
+    edge(int a, int c  ) :  v(a), cost(c) {}
+};
+int bug = 1;
+vector<edge>g[mx];
+int d[mx][mx];
+int inQ[mx][mx];
+void FORD(int n,int k)
+{
+
+    for(int i = 0; i <= n; ++i)
+    {
+        for(int j = 0 ; j <= k ;++j)
+        {
+            d[i][j] = 1 << 30;
+            inQ[i][j] = 0;
+        }
+    }
+
+    queue<edge>q;
+    q.push(edge(1,0));
+    d[1][0] = 0;
+    inQ[1][0] = 1;
+    while (!q.empty())
+    {
+        int m = q.front().v;
+        int p =q.front().cost;
+        q.pop();
+        inQ[m][p] = 0;
+        if(p >= k)
+            continue;
+        for(auto I : g[m])
+        {
+            if(d[m][p] + I.cost < d[I.v][p+1] )
+            {
+                d[I.v][p+1] = d[m][p] + I.cost;
+                if(!inQ[I.v][p+1])
+                {
+                    q.push(edge(I.v, p+1));
+                    inQ[I.v][p+1] = 1;
+                }
+            }
+        }
+
+    }
+
+    int ans = 1 << 30;
+    for(int i = 1; i <= k ; ++i)
+        ans = min(ans, d[n][i]);
+    if(ans == 1 << 30)
+        printf("No satisfactory flights\n");
+    else
+        printf("Total cost of flight(s) is $%d\n",ans);
+}
+
+int main()
+{
+    int t;
+    scanf("%d", &t);
+    for(int tc = 1; tc <= t; ++tc)
+    {
+        int n,m,q,stps;
+        map<string ,int>mp;
+        scanf("%d", &n);
+        For(i,n)
+        {
+            string s1;
+            cin >> s1 ;
+            mp[s1] = i + 1;
+            g[i].clear();
+        }
+        g[n].clear();
+        scanf("%d", &m);
+
+        For(i,m)
+        {
+            string s1,s2;
+            int cst;
+            cin >> s1 >>s2 >>cst;
+            g[mp[s1]].push_back(edge(mp[s2],cst));
+
+        }
+
+
+
+        scanf("%d",&q);
+        printf("Scenario #%d\n", tc);
+        while(q--)
+        {
+           int  Q;
+           scanf("%d", &Q);
+           FORD(n,Q + 1);
+        }
+        printf("\n");
+
+
+
+
+
+
+    }
+}
+
