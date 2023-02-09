@@ -1,0 +1,1 @@
+{"name":"Local: Template","url":"e:\\WernerZiegler\\Template.cpp","tests":[{"id":1675871122428,"input":"3\n1 a\n2 bb\n2 aa","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"e:\\WernerZiegler\\Template.cpp","group":"local","local":true}

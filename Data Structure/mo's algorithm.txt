@@ -7,10 +7,10 @@ struct  voxod
 {
     int l,r,idx;
 }queries[300009];
-ll  curr_ans= 0;
-ll  ans[300010];
+int  curr_ans= 0;
+int  ans[300010];
 int block_size;
-ll cnt[2000005];
+int cnt[2000005];
 inline bool cmp(voxod a ,voxod b){
     int x  =  a.l/block_size;
     int y = b.l/block_size;
@@ -35,16 +35,16 @@ void remove(int x){   ll a;
 int main(){
 
     int n ,q;
-    scanf("%d %d", &n , &q);
+    cin >> n >> q ;
     int a[n+1];
     block_size = int (sqrt(n));
     for(int   i = 0  ; i <n;++i)
     {
-        scanf("%d", &a[i]);
+        cin >> a[i];
     }
     for(int i = 0 ; i  < q;++i)
     {
-    scanf("%d %d", &queries[i].l , &queries[i].r);
+    cin >> queries[i].l >> queries[i].r ;
     queries[i].idx = i;
 
     }

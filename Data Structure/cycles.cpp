@@ -2,7 +2,8 @@ int n;
 int cycle_start, cycle_end;
 vector < int  >g[N];
 int col[N], par[N], vis[N];
-bool dfs(int u) { //  directed graph 
+bool dfs(int u) {
+    //  directed graph 
     col[u] = 1;
     for (int i : g[u]) {
         if (color[i] == 0) {
